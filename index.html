@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#080b14">
+<title>Code AI</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  background:#080b14;
+  color:#fff;
+  font-family:Arial,sans-serif;
+  min-height:100vh;
+}
+
+header{
+  text-align:center;
+  padding:25px 16px 15px;
+}
+
+h1{
+  margin:0;
+  font-size:29px;
+}
+
+.sub{
+  color:#9da7bd;
+  margin-top:7px;
+  font-size:14px;
+}
+
+main{
+  width:92%;
+  max-width:700px;
+  margin:auto;
+}
+
+.box{
+  background:#111725;
+  border:1px solid #263047;
+  border-radius:16px;
+  padding:16px;
+  margin:14px 0;
+}
+
+textarea{
+  width:100%;
+  min-height:130px;
+  resize:vertical;
+  background:#0b1020;
+  color:#fff;
+  border:1px solid #303b55;
+  border-radius:10px;
+  padding:13px;
+  font-size:15px;
+  line-height:1.5;
+  outline:none;
+}
+
+button{
+  border:0;
+  border-radius:10px;
+  padding:12px 16px;
+  font-size:15px;
+  font-weight:bold;
+  cursor:pointer;
+  margin-top:9px;
+}
+
+.generate{
+  width:100%;
+}
+
+#answer{
+  white-space:pre-wrap;
+  background:#0b1020;
+  border:1px solid #27324a;
+  border-radius:10px;
+  padding:14px;
+  min-height:150px;
+  color:#dbe3f5;
+  line-height:1.5;
+  overflow:auto;
+}
+
+.copy{
+  width:100%;
+}
+
+.clear{
+  width:100%;
+}
+
+.note{
+  font-size:12px;
+  color:#7f8aa0;
+  line-height:1.5;
+  margin-top:10px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>🤖 Code AI</h1>
+  <div class="sub">Your Personal Coding Assistant</div>
+</header>
+
+<main>
+
+<section class="box">
+
+<textarea id="prompt"
+placeholder="যেমন:
+আমি একটা calculator app বানাতে চাই।
+এর সম্পূর্ণ HTML, CSS ও JavaScript code দাও।"></textarea>
+
+<button class="generate" onclick="generateCode()">
+🚀 Generate Code
+</button>
+
+<div class="note">
+এটি Code AI-এর প্রথম demo version। এখানে তোমার request দেখা যাবে।
+আসল AI-এর উত্তর পেতে পরে AI model/API যুক্ত করতে হবে।
+</div>
+
+</section>
+
+
+<section class="box">
+
+<h3>💻 AI Response</h3>
+
+<div id="answer">
+তোমার AI response এখানে আসবে...
+</div>
+
+<button class="copy" onclick="copyCode()">
+📋 Copy Code
+</button>
+
+<button class="clear" onclick="clearAll()">
+🗑️ Clear
+</button>
+
+</section>
+
+</main>
+
+
+<script>
+
+function generateCode(){
+
+  const prompt =
+  document.getElementById("prompt").value.trim();
+
+  const answer =
+  document.getElementById("answer");
+
+  if(!prompt){
+
+    answer.textContent =
+    "আগে তুমি কী বানাতে চাও সেটা লিখো 🙂";
+
+    return;
+  }
+
+  answer.textContent =
+`✅ Request Received
+
+তুমি লিখেছো:
+
+${prompt}
+
+━━━━━━━━━━━━━━━━━━
+
+🤖 Code AI
+
+এটি এখন Demo Mode-এ চলছে।
+
+পরের ধাপে AI model/API যুক্ত করলে
+তোমার request অনুযায়ী আসল code
+generate করা যাবে।`;
+
+}
+
+
+function copyCode(){
+
+  const text =
+  document.getElementById("answer").textContent;
+
+  navigator.clipboard.writeText(text)
+  .then(function(){
+
+    alert("Code copied! ✅");
+
+  })
+  .catch(function(){
+
+    alert("Copy করা যায়নি।");
+
+  });
+
+}
+
+
+function clearAll(){
+
+  document.getElementById("prompt").value="";
+
+  document.getElementById("answer").textContent=
+  "তোমার AI response এখানে আসবে...";
+
+}
+
+</script>
+
+</body>
+</html>
