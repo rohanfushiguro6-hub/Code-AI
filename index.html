@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -8,98 +8,59 @@
 
 <style>
 *{box-sizing:border-box}
-
 body{
   margin:0;
   background:#080b14;
-  color:#fff;
+  color:white;
   font-family:Arial,sans-serif;
-  min-height:100vh;
 }
-
 header{
   text-align:center;
-  padding:25px 16px 15px;
+  padding:25px 15px;
 }
-
-h1{
-  margin:0;
-  font-size:29px;
-}
-
-.sub{
-  color:#9da7bd;
-  margin-top:7px;
-  font-size:14px;
-}
+h1{margin:0;font-size:28px}
+.sub{color:#9da7bd;margin-top:7px}
 
 main{
   width:92%;
-  max-width:700px;
+  max-width:600px;
   margin:auto;
 }
-
 .box{
   background:#111725;
   border:1px solid #263047;
   border-radius:16px;
   padding:16px;
-  margin:14px 0;
+  margin-bottom:15px;
 }
-
 textarea{
   width:100%;
-  min-height:130px;
+  height:150px;
   resize:vertical;
+  padding:14px;
   background:#0b1020;
-  color:#fff;
+  color:white;
   border:1px solid #303b55;
   border-radius:10px;
-  padding:13px;
   font-size:15px;
-  line-height:1.5;
-  outline:none;
 }
-
 button{
+  width:100%;
+  margin-top:10px;
+  padding:13px;
   border:0;
   border-radius:10px;
-  padding:12px 16px;
-  font-size:15px;
+  font-size:16px;
   font-weight:bold;
-  cursor:pointer;
-  margin-top:9px;
 }
-
-.generate{
-  width:100%;
-}
-
-#answer{
+.answer{
   white-space:pre-wrap;
   background:#0b1020;
   border:1px solid #27324a;
   border-radius:10px;
   padding:14px;
-  min-height:150px;
-  color:#dbe3f5;
-  line-height:1.5;
+  min-height:120px;
   overflow:auto;
-}
-
-.copy{
-  width:100%;
-}
-
-.clear{
-  width:100%;
-}
-
-.note{
-  font-size:12px;
-  color:#7f8aa0;
-  line-height:1.5;
-  margin-top:10px;
 }
 </style>
 </head>
@@ -107,120 +68,94 @@ button{
 <body>
 
 <header>
-  <h1>🤖 Code AI</h1>
-  <div class="sub">Your Personal Coding Assistant</div>
+<h1>🤖 Code AI</h1>
+<div class="sub">AI Coding Assistant</div>
 </header>
 
 <main>
 
-<section class="box">
-
+<div class="box">
 <textarea id="prompt"
-placeholder="যেমন:
-আমি একটা calculator app বানাতে চাই।
-এর সম্পূর্ণ HTML, CSS ও JavaScript code দাও।"></textarea>
+placeholder="আমি কী app বানাতে চাই সেটা লিখো..."></textarea>
 
-<button class="generate" onclick="generateCode()">
-🚀 Generate Code
-</button>
-
-<div class="note">
-এটি Code AI-এর প্রথম demo version। এখানে তোমার request দেখা যাবে।
-আসল AI-এর উত্তর পেতে পরে AI model/API যুক্ত করতে হবে।
+<button onclick="generateCode()">🚀 Generate Code</button>
 </div>
 
-</section>
-
-
-<section class="box">
-
-<h3>💻 AI Response</h3>
-
-<div id="answer">
-তোমার AI response এখানে আসবে...
+<div class="box">
+<div id="answer" class="answer">
+এখানে AI-এর response দেখা যাবে...
 </div>
 
-<button class="copy" onclick="copyCode()">
-📋 Copy Code
-</button>
-
-<button class="clear" onclick="clearAll()">
-🗑️ Clear
-</button>
-
-</section>
+<button onclick="copyAnswer()">📋 Copy Code</button>
+</div>
 
 </main>
 
-
 <script>
 
-function generateCode(){
+async function generateCode(){
 
-  const prompt =
-  document.getElementById("prompt").value.trim();
+const prompt =
+document.getElementById("prompt").value.trim();
 
-  const answer =
-  document.getElementById("answer");
+const answer =
+document.getElementById("answer");
 
-  if(!prompt){
+if(!prompt){
+answer.textContent =
+"আগে তুমি কী বানাতে চাও সেটা লিখো 🙂";
+return;
+}
 
-    answer.textContent =
-    "আগে তুমি কী বানাতে চাও সেটা লিখো 🙂";
+answer.textContent = "🤖 AI ভাবছে...";
 
-    return;
-  }
+try{
 
-  answer.textContent =
-`✅ Request Received
+const response = await fetch(
+"https://falling-rain-9852.rohanfushiguro6.workers.dev/",
+{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+prompt:prompt
+})
+}
+);
 
-তুমি লিখেছো:
+const data = await response.json();
 
-${prompt}
+if(data.error){
+answer.textContent =
+"❌ Error: " + data.error;
+return;
+}
 
-━━━━━━━━━━━━━━━━━━
+answer.textContent =
+data.reply || "কোনো response পাওয়া যায়নি।";
 
-🤖 Code AI
+}catch(error){
 
-এটি এখন Demo Mode-এ চলছে।
-
-পরের ধাপে AI model/API যুক্ত করলে
-তোমার request অনুযায়ী আসল code
-generate করা যাবে।`;
+answer.textContent =
+"❌ Server-এর সাথে connect করা যায়নি।";
 
 }
 
-
-function copyCode(){
-
-  const text =
-  document.getElementById("answer").textContent;
-
-  navigator.clipboard.writeText(text)
-  .then(function(){
-
-    alert("Code copied! ✅");
-
-  })
-  .catch(function(){
-
-    alert("Copy করা যায়নি।");
-
-  });
-
 }
 
+function copyAnswer(){
 
-function clearAll(){
+const text =
+document.getElementById("answer").textContent;
 
-  document.getElementById("prompt").value="";
+navigator.clipboard.writeText(text);
 
-  document.getElementById("answer").textContent=
-  "তোমার AI response এখানে আসবে...";
+alert("Copied ✅");
 
 }
 
 </script>
 
 </body>
-</html
+</html>
