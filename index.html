@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#080b14">
 <title>Code AI</title>
 
@@ -14,7 +14,6 @@ body{
   background:#080b14;
   color:#fff;
   font-family:Arial,sans-serif;
-  min-height:100vh;
 }
 
 header{
@@ -22,15 +21,11 @@ header{
   padding:28px 15px 18px;
 }
 
-h1{
-  margin:0;
-  font-size:30px;
-}
+h1{margin:0;font-size:30px}
 
 .sub{
   color:#9da7bd;
   margin-top:8px;
-  font-size:14px;
 }
 
 main{
@@ -47,27 +42,15 @@ main{
   margin-bottom:16px;
 }
 
-label{
-  display:block;
-  margin-bottom:8px;
-  font-weight:bold;
-}
-
 textarea{
   width:100%;
   height:160px;
-  resize:vertical;
   padding:14px;
   background:#0b1020;
   color:#fff;
   border:1px solid #303b55;
   border-radius:10px;
   font-size:15px;
-  outline:none;
-}
-
-textarea:focus{
-  border-color:#667eea;
 }
 
 button{
@@ -78,7 +61,6 @@ button{
   border-radius:10px;
   font-size:16px;
   font-weight:bold;
-  cursor:pointer;
 }
 
 .generate{
@@ -91,7 +73,7 @@ button{
   color:#fff;
 }
 
-.answer{
+#answer{
   white-space:pre-wrap;
   word-break:break-word;
   background:#0b1020;
@@ -101,7 +83,6 @@ button{
   min-height:150px;
   font-family:monospace;
   font-size:14px;
-  overflow:auto;
 }
 </style>
 </head>
@@ -115,109 +96,114 @@ button{
 
 <main>
 
-  <div class="box">
+<div class="box">
 
-    <label>💬 What do you want to build?</label>
+<textarea id="prompt"
+placeholder="যেমন: একটা calculator app বানানোর HTML CSS JavaScript code দাও"></textarea>
 
-    <textarea
-      id="prompt"
-      placeholder="যেমন: একটা calculator app বানানোর HTML CSS JavaScript code দাও"
-    ></textarea>
+<button class="generate" onclick="generateCode()">
+🚀 Generate Code
+</button>
 
-    <button class="generate" onclick="generateCode()">
-      🚀 Generate Code
-    </button>
+</div>
 
-  </div>
+<div class="box">
 
-  <div class="box">
+<b>💻 AI Response</b>
 
-    <label>💻 AI Response</label>
-
-    <div id="answer" class="answer">
+<div id="answer">
 এখানে AI-এর response দেখা যাবে...
-    </div>
+</div>
 
-    <button class="copy" onclick="copyAnswer()">
-      📋 Copy Code
-    </button>
+<button class="copy" onclick="copyAnswer()">
+📋 Copy
+</button>
 
-  </div>
+</div>
 
 </main>
 
 <script>
 
+const API_URL =
+"https://falling-rain-9852.rohanfushiguro6.workers.dev/";
+
 async function generateCode(){
 
   const prompt =
-    document.getElementById("prompt").value.trim();
+  document.getElementById("prompt").value.trim();
 
   const answer =
-    document.getElementById("answer");
+  document.getElementById("answer");
 
   if(!prompt){
-
     answer.textContent =
-      "আগে তুমি কী বানাতে চাও সেটা লিখো 🙂";
-
+    "আগে কী বানাতে চাও সেটা লিখো 🙂";
     return;
   }
 
   answer.textContent =
-    "🤖 AI ভাবছে...";
+  "🤖 AI ভাবছে...";
 
   try{
 
-    const response = await fetch(
-      "https://falling-rain-9852.rohanfushiguro6.workers.dev/",
-      {
-        method:"POST",
+    const response = await fetch(API_URL,{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({
+        prompt:prompt
+      })
+    });
 
-        headers:{
-          "Content-Type":"application/json"
-        },
+    const text = await response.text();
 
-        body:JSON.stringify({
-          prompt:prompt
-        })
-      }
-    );
+    let data;
 
-    const data =
-      await response.json();
+    try{
+      data = JSON.parse(text);
+    }catch{
+      answer.textContent =
+      "❌ Server response:\n\n" + text;
+      return;
+    }
+
+    if(!response.ok){
+      answer.textContent =
+      "❌ Error " + response.status +
+      "\n\n" +
+      (data.error || "Unknown error");
+      return;
+    }
 
     if(data.error){
-
       answer.textContent =
-        "❌ " + data.error;
-
+      "❌ " + data.error;
       return;
     }
 
     answer.textContent =
-      data.reply ||
-      "কোনো response পাওয়া যায়নি।";
+    data.reply ||
+    "কোনো response পাওয়া যায়নি।";
 
   }catch(error){
 
     answer.textContent =
-      "❌ Server-এর সাথে connect করা যায়নি।";
+    "❌ Connection error\n\n" +
+    error.message;
 
   }
-
 }
-
 
 function copyAnswer(){
 
   const text =
-    document.getElementById("answer").textContent;
+  document.getElementById("answer").textContent;
 
   navigator.clipboard.writeText(text);
 
   alert("Copied ✅");
-
 }
 
 </script>
